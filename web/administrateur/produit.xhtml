@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Gestion Client</title>
+    </h:head>
+    <h:body>
+        <h:form id="form">
+            <p:growl id="msgs" showDetail="true"/>
+            
+            <p:dataTable id="dataTable" value="#{produitController.items}" var="item"
+                         rows="10" paginator="true"
+                         filteredValue="#{produitController.filteredItems}"
+                         editable="true" editMode="cell"
+                         emptyMessage="Aucune donnée">
+                <p:ajax event="cellEdit" listener="#{produitController.maj}" update=":form:msgs" />
+                <p:column filterBy="#{item.idProduit}" headerText="ID" footerText="ID" filterMatchMode="contains">
+                    <h:outputText value="#{item.idProduit}" />
+                </p:column>
+                <p:column filterBy="#{item.idCategorie}" headerText="Categorie" footerText="Categorie" filterMatchMode="contains">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{item.categorie}" /></f:facet>
+                        <f:facet name="input">
+                            <p:selectOneMenu value="#{item.idCategorie}" style="width:100%">
+                                <f:selectItems value="#{produitController.categories}" var="categorie" itemLabel="#{categorie.categorie}" itemValue="#{categorie.idCategorie}" />
+                            </p:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column filterBy="#{item.cinClient}" headerText="Client" footerText="Client" filterMatchMode="contains">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{item.client}" /></f:facet>
+                        <f:facet name="input">
+                            <p:selectOneMenu value="#{item.cinClient}" style="width:100%">
+                                <f:selectItems value="#{produitController.clients}" var="client" itemLabel="#{client}" itemValue="#{client.cin}" />
+                            </p:selectOneMenu>
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column filterBy="#{item.nomProduit}" headerText="Produit" footerText="Produit" filterMatchMode="contains">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{item.nomProduit}" /></f:facet>
+                        <f:facet name="input"><p:inputText value="#{item.nomProduit}" /></f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column headerText="Image">
+                    <p:commandButton id="image" value="Image" type="button" />
+                    <p:overlayPanel for="image" showEvent="mouseover" hideEvent="mousedown">
+                        <p:graphicImage value="../ImageProduits/#{item.image}" width="300" />
+                    </p:overlayPanel>
+                    <p:commandButton update=":form:image" oncomplete="PF('image').show()" icon="ui-icon-arrowstop-1-s">
+                        <f:setPropertyActionListener value="#{item}" target="#{produitController.image}" />
+                    </p:commandButton>
+                </p:column>
+                <p:column filterBy="#{item.prixInitiale}" headerText="Prix Initiale" footerText="Prix Initiale" filterMatchMode="contains">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{item.prixInitiale}" /></f:facet>
+                        <f:facet name="input"><p:inputText value="#{item.prixInitiale}" /></f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column filterBy="#{item.validite}" headerText="Validite" footerText="Validite" filterMatchMode="contains">
+                        <h:outputText value="#{item.validite}" />
+                </p:column>
+                <p:column style="width:70px; text-align: center">
+                    <p:commandButton update=":form:view" oncomplete="PF('view').show()" icon="ui-icon-pencil" title="Supprimer">
+                        <f:setPropertyActionListener value="#{item}" target="#{produitController.valide}" />
+                    </p:commandButton>
+                    <p:commandButton update=":form:delete" oncomplete="PF('delete').show()" icon="ui-icon-close" title="Supprimer">
+                        <f:setPropertyActionListener value="#{item}" target="#{produitController.selected}" />
+                    </p:commandButton>
+                </p:column>
+                <f:facet name="footer" >
+                    <p:commandButton actionListener="#{produitController.prepareAjout}" oncomplete="PF('add').show()" icon="ui-icon-plus" value="Ajout" />
+                </f:facet>
+            </p:dataTable>
+            
+            <p:dialog id="add" widgetVar="add" header="Ajout" modal="true" showEffect="fade" hideEffect="fade" resizable="false" style="text-align:center;">
+                <p:panelGrid columns="2">
+                    <h:outputText value="Categorie" />
+                    <p:selectOneMenu value="#{produitController.nouveau.idCategorie}">
+                        <f:selectItems value="#{produitController.categories}" var="categorie" itemLabel="#{categorie.categorie}" itemValue="#{categorie.idCategorie}" />
+                    </p:selectOneMenu>
+                    <h:outputText value="Client" />
+                    <p:selectOneMenu value="#{produitController.nouveau.cinClient}">
+                        <f:selectItems value="#{produitController.clients}" var="client" itemLabel="#{client}" itemValue="#{client.cin}" />
+                    </p:selectOneMenu>
+                    <h:outputText value="Produit" />
+                    <p:inputText value="#{produitController.nouveau.nomProduit}" />
+                    <h:outputText value="Description" />
+                    <p:inputText value="#{produitController.nouveau.description}" />
+                    <h:outputText value="Prix Initiale" />
+                    <p:inputText value="#{produitController.nouveau.prixInitiale}" />
+                    <h:outputText value="Date Fin" />
+                    <p:calendar value="#{produitController.nouveau.dateFin}" locale="fr" navigator="true" pattern="yyyy-MM-dd HH:mm:ss" />
+                </p:panelGrid>
+                <p:commandButton update=":form:dataTable, :form:msgs" actionListener="#{produitController.ajout}" oncomplete="PF('add').hide()" icon="ui-icon-check" />
+            </p:dialog>
+            <p:dialog id="delete" widgetVar="delete" header="Suppression" modal="true" showEffect="fade" hideEffect="fade" resizable="false" style="text-align:center;">
+                <p:panelGrid columns="2">
+                    <h:outputText value="ID" />
+                    <h:outputText value="#{produitController.selected.idProduit}" />
+                </p:panelGrid>
+                <p:commandButton update=":form:dataTable, :form:msgs" actionListener="#{produitController.destroy}" oncomplete="PF('delete').hide()" icon="ui-icon-check" />
+            </p:dialog>
+            <p:dialog id="view" widgetVar="view" header="Validation" modal="true" showEffect="fade" hideEffect="fade" resizable="false">
+                <p:panelGrid columns="2">
+                    <p:graphicImage value="../ImageProduits/#{produitController.valide.image}" width="300" />
+                    <p:panelGrid columns="2">
+                        <h:outputText value="ID:" />
+                        <h:outputText value="#{produitController.valide.idProduit}" />
+                        <h:outputText value="Categorie:" />
+                        <h:outputText value="#{produitController.valide.categorie}" />
+                        <h:outputText value="Client:" />
+                        <h:outputText value="#{produitController.valide.client}" />
+                        <h:outputText value="Nom Produit:" />
+                        <h:outputText value="#{produitController.valide.nomProduit}" />
+                        <h:outputText value="Description:" />
+                        <h:outputText value="#{produitController.valide.description}" />
+                        <h:outputText value="Prix Initiale:" />
+                        <h:outputText value="#{produitController.valide.prixInitiale}" />
+                        <h:outputText value="Date Debut:" />
+                        <h:outputText value="#{produitController.valide.dateDebut}" />
+                        <h:outputText value="Date Fin:" />
+                        <h:outputText value="#{produitController.valide.dateFin}" />
+                    </p:panelGrid>
+                </p:panelGrid>
+                <div style="text-align:center">
+                    <p:commandButton update=":form:dataTable, :form:msgs" actionListener="#{produitController.validation}" oncomplete="PF('view').hide()" icon="ui-icon-check" />
+                    <p:commandButton update=":form:dataTable, :form:msgs" actionListener="#{produitController.devalidation}" oncomplete="PF('view').hide()" icon="ui-icon-close" />
+                </div>
+            </p:dialog>
+            <p:dialog id="image" widgetVar="image" header="Changer image" modal="true" showEffect="fade" hideEffect="fade" resizable="false" style="width:75%; text-align:center;">
+                <p:graphicImage value="../ImageProduits/#{produitController.image.image}" width="300" />
+                <br />
+                <p:fileUpload fileUploadListener="#{produitController.uploadFile}" mode="advanced"
+                              dragDropSupport="true" multiple="false" fileLimit="1" allowTypes="/(\.|\/)(gif|jpe?g|png)$/"
+                              update=":form:dataTable, :form:msgs" oncomplete="PF('image').hide()" />
+            </p:dialog>
+        </h:form>
+        <br />
+        <h4><h:link outcome="administrateur_index" value="retoure"/></h4>
+    </h:body>
+</html>

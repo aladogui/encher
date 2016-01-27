@@ -1,0 +1,110 @@
+<?xml version="1.0" encoding="UTF-8" ?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Transitional//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:ui="http://xmlns.jcp.org/jsf/facelets"
+      xmlns:h="http://xmlns.jcp.org/jsf/html"
+      xmlns:f="http://xmlns.jcp.org/jsf/core"
+      xmlns:p="http://primefaces.org/ui">
+    <h:head>
+        <title>Gestion Client</title>
+    </h:head>
+    <h:body>
+        <h:form id="form">
+            <p:growl id="msgs" showDetail="true"/>
+            
+            <p:dataTable id="dataTable" value="#{clientController.items}" var="item"
+                         rows="10" paginator="true"
+                         filteredValue="#{clientController.filteredItems}"
+                         editable="true" editMode="cell"
+                         emptyMessage="Aucune donnée">
+                <p:ajax event="cellEdit" listener="#{clientController.maj}" update=":form:msgs" />
+                <p:column filterBy="#{item.cin}" headerText="CIN" footerText="CIN" filterMatchMode="contains">
+                    <h:outputText value="#{item.cin}" />
+                </p:column>
+                <p:column filterBy="#{item.nom}" headerText="Nom" footerText="Nom" filterMatchMode="contains">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{item.nom}" /></f:facet>
+                        <f:facet name="input"><p:inputText value="#{item.nom}" /></f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column filterBy="#{item.prenom}" headerText="Prenom" footerText="Prenom" filterMatchMode="contains">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{item.prenom}" /></f:facet>
+                        <f:facet name="input"><p:inputText value="#{item.prenom}" /></f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column filterBy="#{item.mail}" headerText="Mail" footerText="Mail" filterMatchMode="contains">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{item.mail}" /></f:facet>
+                        <f:facet name="input"><p:inputText value="#{item.mail}" /></f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column filterBy="#{item.mdp}" headerText="Mot de passe" footerText="Mot de passe" filterMatchMode="contains">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{item.mdp}" /></f:facet>
+                        <f:facet name="input"><p:inputText value="#{item.mdp}" /></f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column filterBy="#{item.adresse}" headerText="Adresse" footerText="Adresse" filterMatchMode="contains">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{item.adresse}" /></f:facet>
+                        <f:facet name="input"><p:inputText value="#{item.adresse}" /></f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column filterBy="#{item.dateNaissance}" headerText="Date Naissance" footerText="Date Naissance" filterMatchMode="contains">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{item.dateNaissance}" /></f:facet>
+                        <f:facet name="input">
+                            <p:calendar value="#{item.dateNaissance}" locale="fr" navigator="true" pattern="yyyy-MM-dd" />
+                        </f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column filterBy="#{item.telephone}" headerText="Telephone" footerText="Telephone" filterMatchMode="contains">
+                    <p:cellEditor>
+                        <f:facet name="output"><h:outputText value="#{item.telephone}" /></f:facet>
+                        <f:facet name="input"><p:inputText value="#{item.telephone}" /></f:facet>
+                    </p:cellEditor>
+                </p:column>
+                <p:column style="width:33px; text-align: center">
+                    <p:commandButton update=":form:delete" oncomplete="PF('delete').show()" icon="ui-icon-close" title="Supprimer">
+                        <f:setPropertyActionListener value="#{item}" target="#{clientController.selected}" />
+                    </p:commandButton>
+                </p:column>
+                <f:facet name="footer" >
+                    <p:commandButton actionListener="#{clientController.prepareAjout}" oncomplete="PF('add').show()" icon="ui-icon-plus" value="Ajout" />
+                </f:facet>
+            </p:dataTable>
+            
+            <p:dialog id="add" widgetVar="add" header="Ajout" modal="true" showEffect="fade" hideEffect="fade" resizable="false" style="text-align:center;">
+                <p:panelGrid columns="2">
+                    <h:outputText value="CIN" />
+                    <p:inputText value="#{clientController.nouveau.cin}" />
+                    <h:outputText value="Nom" />
+                    <p:inputText value="#{clientController.nouveau.nom}" />
+                    <h:outputText value="Prenom" />
+                    <p:inputText value="#{clientController.nouveau.prenom}" />
+                    <h:outputText value="Mail" />
+                    <p:inputText value="#{clientController.nouveau.mail}" />
+                    <h:outputText value="Mot de passe" />
+                    <p:inputText value="#{clientController.nouveau.mdp}" />
+                    <h:outputText value="Date naissance" />
+                    <p:calendar value="#{clientController.nouveau.dateNaissance}" locale="fr" navigator="true" pattern="yyyy-MM-dd" />
+                    <h:outputText value="Adresse" />
+                    <p:inputText value="#{clientController.nouveau.adresse}" />
+                    <h:outputText value="Telephone" />
+                    <p:inputText value="#{clientController.nouveau.telephone}" />
+                </p:panelGrid>
+                <p:commandButton update=":form:dataTable, :form:msgs" actionListener="#{clientController.ajout}" oncomplete="PF('add').hide()" icon="ui-icon-check" />
+            </p:dialog>
+            <p:dialog id="delete" widgetVar="delete" header="Suppression" modal="true" showEffect="fade" hideEffect="fade" resizable="false" style="text-align:center;">
+                <p:panelGrid columns="2">
+                    <h:outputText value="CIN" />
+                    <h:outputText value="#{clientController.selected.cin}" />
+                </p:panelGrid>
+                <p:commandButton update=":form:dataTable, :form:msgs" actionListener="#{clientController.destroy}" oncomplete="PF('delete').hide()" icon="ui-icon-check" />
+            </p:dialog>
+        </h:form>
+        <br />
+        <h4><h:link outcome="administrateur_index" value="retoure"/></h4>
+    </h:body>
+</html>
